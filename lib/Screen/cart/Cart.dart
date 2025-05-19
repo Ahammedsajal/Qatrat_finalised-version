@@ -4218,6 +4218,8 @@ Future<void> placeOrder(String? tranId) async {
       selTime: selTime,
       baseUrl: baseUrl,
       placeOrder: placeOrder, // Pass this callback to be called upon completion.
+      accountPhone: userProvider.mobile,
+  checkoutMobile: mobileController.text.trim(),
     );
     return; // Stop further order placement until SkipCash payment completes.
   }
@@ -4327,6 +4329,8 @@ Future<void> initiateSkipCashPayment(
   required String? selTime,
   required String baseUrl,
   required Future<void> Function(String?) placeOrder,
+    required String accountPhone,
+  required String checkoutMobile,
 }) async {
   final Logger _log = Logger('SkipCashPayment');
   _log.info('START: initiateSkipCashPayment called with orderId: $orderId, amount: $amount');
@@ -4370,8 +4374,10 @@ Future<void> initiateSkipCashPayment(
       : ['John', 'Doe'];
   final firstName = nameParts[0];
   final lastName = nameParts.length > 1 ? nameParts[1] : 'Doe';
-  final phone = userProvider.mobile.isNotEmpty ? userProvider.mobile : '97412345678';
-  final email = userProvider.email.isNotEmpty ? userProvider.email : 'user@example.com';
+  final phone = userProvider.mobile.isNotEmpty ? userProvider.mobile : '"';
+  final email = userProvider.email.isNotEmpty ? userProvider.email : '"';
+final String accountPhone = userProvider.mobile ?? '';
+final String checkoutMobile = userMobile; // from the form/controller
 
   final cartData = {
     'total': totalPrice,
@@ -4392,10 +4398,11 @@ Future<void> initiateSkipCashPayment(
     'device_os': Platform.isAndroid ? 'android' : 'ios',
     'fcm_id': '',
     'cart_data': cartData, // ✅ Send as nested object
-
+ 'account_phone': accountPhone,
+  'mobile': checkoutMobile,
     'first_name': firstName,
     'last_name': lastName,
-    'phone': phone,
+    
     'email': email,
   };
 
